@@ -1,0 +1,404 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "d3596f97",
+   "metadata": {},
+   "source": [
+    "# Congnifyz Internship Program\n",
+    "\n",
+    "## Restaurant Data Analysis"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a7a7db6c",
+   "metadata": {},
+   "source": [
+    "-------------------"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cf3ac3a8",
+   "metadata": {},
+   "source": [
+    "### **Author : Mayur Padore**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0f9ff51c",
+   "metadata": {},
+   "source": [
+    "### Level 2 : \n",
+    "\n",
+    "**Task 1 : Table Booking and Online Delivery**\n",
+    "\n",
+    "    - Determine the percentage of restaurants that offer table booking and online delivery.\n",
+    "    \n",
+    "    - Compare the average ratings of restaurants with table booking and those without.\n",
+    "    \n",
+    "    - Analyze the availability of online delivery among restaurants with different price ranges.\n",
+    "    \n",
+    "    \n",
+    "**Task 2 : Price Range Analysis**\n",
+    "\n",
+    "    - Determine the most common price range among all the restaurants.\n",
+    "    \n",
+    "    - Calculate the average rating for each price range & Identify the color that represents the highest average rating \n",
+    "    among different price ranges.\n",
+    "    \n",
+    "    \n",
+    "**Task 3 : Feature Engineering**\n",
+    "\n",
+    "    - Extract additional features from the existing columns, such as the length of the restaurant name or address.\n",
+    "    \n",
+    "    - Create new features like \"Has Table Booking\"or \"Has Online Delivery\" by encoding categorical variables.\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af4fe090",
+   "metadata": {},
+   "source": [
+    "----------------"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "65945bf2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Importing the Warning\n",
+    "\n",
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "63b9255e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Importing the libraries which are we going to use for EDA\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns; sns.set(color_codes=True)\n",
+    "%matplotlib inline"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "e051890f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Load the Dataset\n",
+    "\n",
+    "df1 = pd.read_csv(\"new_Dataset.csv\")  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "3ab9cad5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Restaurant ID           0\n",
+       "Restaurant Name         0\n",
+       "Country Code            0\n",
+       "City                    0\n",
+       "Address                 0\n",
+       "Locality                0\n",
+       "Locality Verbose        0\n",
+       "Longitude               0\n",
+       "Latitude                0\n",
+       "Cuisines                0\n",
+       "Average Cost for two    0\n",
+       "Currency                0\n",
+       "Has Table booking       0\n",
+       "Has Online delivery     0\n",
+       "Is delivering now       0\n",
+       "Switch to order menu    0\n",
+       "Price range             0\n",
+       "Aggregate rating        0\n",
+       "Rating color            0\n",
+       "Rating text             0\n",
+       "Votes                   0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df1.isnull().sum()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "2f514ab1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 9551 entries, 0 to 9550\n",
+      "Data columns (total 21 columns):\n",
+      " #   Column                Non-Null Count  Dtype  \n",
+      "---  ------                --------------  -----  \n",
+      " 0   Restaurant ID         9551 non-null   int64  \n",
+      " 1   Restaurant Name       9551 non-null   object \n",
+      " 2   Country Code          9551 non-null   int64  \n",
+      " 3   City                  9551 non-null   object \n",
+      " 4   Address               9551 non-null   object \n",
+      " 5   Locality              9551 non-null   object \n",
+      " 6   Locality Verbose      9551 non-null   object \n",
+      " 7   Longitude             9551 non-null   float64\n",
+      " 8   Latitude              9551 non-null   float64\n",
+      " 9   Cuisines              9551 non-null   object \n",
+      " 10  Average Cost for two  9551 non-null   int64  \n",
+      " 11  Currency              9551 non-null   object \n",
+      " 12  Has Table booking     9551 non-null   object \n",
+      " 13  Has Online delivery   9551 non-null   object \n",
+      " 14  Is delivering now     9551 non-null   object \n",
+      " 15  Switch to order menu  9551 non-null   object \n",
+      " 16  Price range           9551 non-null   int64  \n",
+      " 17  Aggregate rating      9551 non-null   float64\n",
+      " 18  Rating color          9551 non-null   object \n",
+      " 19  Rating text           9551 non-null   object \n",
+      " 20  Votes                 9551 non-null   int64  \n",
+      "dtypes: float64(3), int64(5), object(13)\n",
+      "memory usage: 1.5+ MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "df1.info()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2822965a",
+   "metadata": {},
+   "source": [
+    "# Level 2 - Task 1:- \n",
+    "\n",
+    "## Task: Table Booking and Online Delivery"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ccdeae64",
+   "metadata": {},
+   "source": [
+    "##### 1. Determine the percentage of restaurants that offer table booking and online delivery."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "823d12b9",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "No     8393\n",
+       "Yes    1158\n",
+       "Name: Has Table booking, dtype: int64"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Check for value counts\n",
+    "\n",
+    "df1[\"Has Table booking\"].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "b6c858b2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "No     7100\n",
+       "Yes    2451\n",
+       "Name: Has Online delivery, dtype: int64"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df1[\"Has Online delivery\"].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "b9621e64",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Table Booking :  12.12 %\n",
+      "Online Delivery :  25.66 %\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Table Booking : \", round((1158/(8393+1158)) *100, 2),\"%\")\n",
+    "\n",
+    "print(\"Online Delivery : \", round((2451/(7100+2451)) *100, 2),\"%\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "2d1794fd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Another way to find the percentage"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "73795e72",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Percentage of Restaurants offers table booking: 12.12 %\n",
+      "\n",
+      "Percentage of Restaurants offers online delivery: 25.66 %\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Number of restaurants offering table booking & online delivery\n",
+    "\n",
+    "table_booking = df1['Has Table booking'].value_counts().get('Yes')\n",
+    "\n",
+    "online_delivery = df1['Has Online delivery'].value_counts().get('Yes')\n",
+    "\n",
+    "# Calculate the percentage for table booking * online delivery\n",
+    "\n",
+    "percentage_table_booking = (table_booking / len(df1)) * 100\n",
+    "\n",
+    "percentage_online_delivery = (online_delivery / len(df1)) * 100\n",
+    "\n",
+    "print(f\"Percentage of Restaurants offers table booking: {percentage_table_booking:.2f} %\\n\")\n",
+    "print(f\"Percentage of Restaurants offers online delivery: {percentage_online_delivery:.2f} %\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ef4772a7",
+   "metadata": {},
+   "source": [
+    "##### 2. Compare the average ratings of restaurants with table booking and those without."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "228ebfe0",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Rows With Table Booking : (1158, 21)\n",
+      "Rows Without Table Booking : (8393, 21)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Filter the DataFrame for rows with 'Yes' & 'No' in the 'Table Booking' column\n",
+    "\n",
+    "df_with_table_booking = df1[df1['Has Table booking'] == 'Yes']\n",
+    "\n",
+    "df_without_table_booking = df1[df1['Has Table booking'] == 'No']\n",
+    "\n",
+    "# After filtering rows with and without table booking\n",
+    "\n",
+    "print(\"Rows With Table Booking :\", df_with_table_booking.shape)\n",
+    "\n",
+    "print(\"Rows Without Table Booking :\", df_without_table_booking.shape)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "54bd0dc9",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Average Ratings:- \n",
+      " With Table Booking :  3.44\n",
+      " Without Table Booking :  2.56\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Average Ratings of Restaurants\n",
+    "\n",
+    "print(\"Average Ratings:- \")\n",
+    "print(\" With Table Booking : \", round(df_with_table_booking[\"Aggregate rating\"].mean(),2))\n",
+    "print(\" Without Table Booking : \", round(df_without_table_booking[\"Aggregate rating\"].mean(),2))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "29651cc4",
+   "metadata": {},
+   "source": [
+    "##### 3. Analyze the availability of online delivery among restaurants with different price ranges."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "d5efeb68",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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
